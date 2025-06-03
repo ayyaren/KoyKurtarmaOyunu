@@ -1,0 +1,141 @@
+﻿@{
+    ViewData["Title"] = "Köy Kurtarma Oyunu";
+}
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+<div class="container my-4">
+    <h1 class="mb-4 text-center">@ViewData["Title"]</h1>
+
+    @if (TempData["Mesaj"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["Mesaj"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+    @if (TempData["Hata"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @TempData["Hata"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    Mevcut Köy
+                </div>
+                <div class="card-body">
+                    @if (ViewBag.MevcutKoy != null)
+                    {
+                        <h5 class="card-title">@ViewBag.MevcutKoy.Ad</h5>
+                    }
+                    else
+                    {
+                        <p class="text-success">Tüm köyler kurtarıldı! Oyun bitti.</p>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-warning text-dark">
+                    Kurtarılması Gereken Köyler
+                </div>
+                <div class="card-body">
+                    @{
+                        var kurtarilacakKoyler = ViewBag.KurtarilacakKoyler as IEnumerable<KoyKurtarmaOyunu.Models.Koy>;
+                    }
+                    @if (kurtarilacakKoyler == null || !kurtarilacakKoyler.Any())
+                    {
+                        <p>Bekleyen köy yok.</p>
+                    }
+                    else
+                    {
+                        <ul class="list-group list-group-flush">
+                            @foreach (var koy in kurtarilacakKoyler)
+                            {
+                                <li class="list-group-item">@koy.Ad</li>
+                            }
+                        </ul>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-success text-white">
+                    Kurtarılan Köyler
+                </div>
+                <div class="card-body">
+                    @{
+                        var kurtarilanKoyler = ViewBag.KurtarilanKoyler as IEnumerable<KoyKurtarmaOyunu.Models.Koy>;
+                    }
+                    @if (kurtarilanKoyler == null || !kurtarilanKoyler.Any())
+                    {
+                        <p>Henüz köy kurtarılmadı.</p>
+                    }
+                    else
+                    {
+                        <ul class="list-group list-group-flush">
+                            @foreach (var koy in kurtarilanKoyler)
+                            {
+                                <li class="list-group-item">@koy.Ad</li>
+                            }
+                        </ul>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-info text-white">
+                    Çanta (Envanter)
+                </div>
+                <div class="card-body">
+                    @{
+                        var canta = ViewBag.Canta as IEnumerable<KoyKurtarmaOyunu.Models.Item>;
+                    }
+                    @if (canta == null || !canta.Any())
+                    {
+                        <p>Çanta boş.</p>
+                    }
+                    else
+                    {
+                        <form asp-controller="OyunControl" asp-action="ItemKullan" method="post">
+                            @Html.AntiForgeryToken()
+                            <ul class="list-group list-group-flush">
+                                @foreach (var item in canta)
+                                {
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        @item.Ad
+                                        <button name="itemAdi" value="@item.Ad" type="submit" class="btn btn-sm btn-danger">
+                                            Kullan
+                                        </button>
+                                    </li>
+                                }
+                            </ul>
+                        </form>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <form asp-controller="OyunController" asp-action="KoyKurtar" method="post" class="text-center mt-3">
+        @Html.AntiForgeryToken()
+        <button type="submit" class="btn btn-lg btn-primary" @(ViewBag.MevcutKoy == null ? "disabled" : "")>
+            Mevcut Köyü Kurtar
+        </button>
+    </form>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+

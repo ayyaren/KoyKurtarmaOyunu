@@ -1,0 +1,10 @@
+﻿@{
+    ViewData["Title"] = "Test Sayfası";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<form asp-controller="Test" asp-action="Submit" method="post">
+    @Html.AntiForgeryToken()
+    <button type="submit" class="btn btn-primary">Test POST Gönder</button>
+</form>
